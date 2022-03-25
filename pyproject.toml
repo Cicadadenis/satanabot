@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "secret"
+version = "0.1.0"
+description = "Cicada_bot"
+authors = ["Cicada3301"]
+license = "Corporation Cicada Exchange"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Telethon = "^1.24.0"
+APScheduler = "^3.9.1"
+environs = "^9.5.0"
+aiosqlite = "^0.17.0"
+requests = "^2.27.1"
+aiogram = "^2.19"
+PySocks = "^1.7.1"
+cryptg = "^0.2.post4"
+pandas = "^1.4.1"
+rarfile = "^4.0"
+loguru = "^0.6.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
