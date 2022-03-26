@@ -40,7 +40,6 @@ from keyboards.inline.menu import back_to_main_menu,  api_hash, api_id, code_men
 from utils.db_api.db_commands import select_all_users, del_user, update_date
 from calendar import c
 from email import message
-import pandas as pd
 import random
 from telethon.sessions import StringSession
 from telethon.tl.custom import Button
@@ -83,8 +82,6 @@ from aiogram import Bot, types, executor
 from aiogram.utils.markdown import hbold, hlink
 import time
 from threading import Timer
-#from data.config import api_id, api_hash
-#from loader import scheduler
 import os
 from telethon.sync import TelegramClient
 from telethon import functions, types
@@ -113,7 +110,7 @@ class tima(StatesGroup):
     timeout = State()
 @dp.callback_query_handler(text="paussa")
 async def paus(call: CallbackQuery):
-    await call.message.answer("⏱    <b>Введи значение для паузы между отправкой смс 'меньше 30 сек не рекоминдую спам'</b>")
+    await call.message.answer("⏱    <b>Введи значение для паузы между отправкой смс 'меньше 30 сек не рекоминдую спам'</b>", reply_markup=back_to_main_menu)
     @dp.message_handler(content_types=['text'])
     async def paus(message: Message):
         pausse = message.text
