@@ -40,7 +40,6 @@ from keyboards.inline.menu import back_to_main_menu,  api_hash, api_id, code_men
 from utils.db_api.db_commands import select_all_users, del_user, update_date
 from calendar import c
 from email import message
-import pandas as pd
 import random
 from telethon.sessions import StringSession
 from telethon.tl.custom import Button
