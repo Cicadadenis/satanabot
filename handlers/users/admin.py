@@ -380,6 +380,8 @@ async def broadcast4(message: Message, state: FSMContext):
     photo_name = name + ".jpg"
     await message.photo[-1].download(f"pics/broadcast/{photo_name}")
     await state.update_data(photo=photo_name, text=message.caption)
+    with open("foto.txt", "w") as f:
+        f.write("+++")
     await asyncio.sleep(2)
     await message.answer("🏞    <b>Фото успешно загруженно</b>", reply_markup=back_to_main_menu)
 
@@ -388,8 +390,8 @@ async def broadcast4(message: Message, state: FSMContext):
 @dp.callback_query_handler(text="fdel")
 async def fdel(call: CallbackQuery):
     try:
-        path = f'pics/broadcast/cicada.jpg'
-        os.remove(path)
+        with open("foto.txt", "w") as f:
+            f.write("---")
         await call.message.answer("<b>Фото Удаленно</b>", reply_markup=back_to_main_menu)
     except:
         await call.message.answer("<b>Фото Удаленно</b>", reply_markup=back_to_main_menu)
@@ -487,9 +489,10 @@ async def cann(message: Message, state: FSMContext):
                    
                     d = d + 1
                 except:
+                    
                     await msms.edit_text(
                         f"<b>Добавленно в Группу: {o}</b>\n"
-                        f"<b>Не Добавлен {aka} в группу ❌</b>")
+                        f"<b>Не Добавлен {akk} в группу ❌</b>")
                     ti2 = open('time.txt', 'r')
                     ti = int(ti2.read())
                     ti2.close()
@@ -691,11 +694,8 @@ async def broadcast_text_post(call: CallbackQuery):
         except:
             client = TelegramClient(f"sessions/{acaunt}", api_id, api_hash)
             await client.connect()
-        try:
-          with open("pics/broadcast/cicada.jpg", 'rb') as ph:
-              tot = ph.read()
-        except:
-          tot = None
+
+        fff = open("pics/broadcast/cicada.jpg", 'rb').read() 
         ssm = open('sms.txt', 'r', encoding="UTF-8").read()
         zz = ssm.split('|')
         sms = random.choice(zz)
@@ -718,12 +718,19 @@ async def broadcast_text_post(call: CallbackQuery):
             p = p - 40
         if len(file_list2) >= p:
             try:
-                with open("ussers.txt", "r") as z:
-                    lines = z.readlines()
-                    far = lines[0][:-1]
-                await client.send_file(far, file=tot, caption=ssm)
-                with open("ussers.txt", "w") as f:
-                    f.writelines(lines[1:])
+                ft = open("foto.txt", "r").read()
+                if ft == "+++":
+                    with open("ussers.txt", "r") as z:
+                        lines = z.readlines()
+                        far = lines[0][:-1]
+                    await client.send_file(far, file=fff, caption=ssm)
+                    with open("ussers.txt", "w") as f:
+                        f.writelines(lines[1:])
+                if ft == "---":
+                    with open("ussers.txt", "r") as z:
+                        lines = z.readlines()
+                        far = lines[0][:-1]
+                    await client.send_message(far, ssm)
                 p = p + 1
                 propusk = 0
                 t = t + 1
@@ -771,7 +778,7 @@ async def broadcast_text_post(call: CallbackQuery):
             i = i + 1
             mom = mom - 1
     await call.message.answer("✅ <b>Рассылка Завершена</b> ✅", reply_markup=back_to_main_menu)    
-            #break
+
         
 
         
