@@ -54,8 +54,8 @@ from telethon.tl.functions.messages import GetDialogsRequest
 from telethon import TelegramClient
 
 from keyboards.inline.menu import back_to_main_menu, api_hash, api_id, code_menu, \
-    main_menu, proxy_menu, start_spam_menu, accept_spam_menu, userrs
-from loader import dp, scheduler, bot
+    main_menu, proxy_menu, start_spam_menu, accept_spam_menu, userrs, ssttop
+from loader import dp, scheduler
 from states.states import AddAccount, DelAcc, AddProxy, DelProxy, SpamChat, SpamUser, SpamBot
 from utils.db_api.db_commands import *
 # ===============CHATS===========
@@ -65,9 +65,6 @@ from keyboards.inline.menu import admin_menu, akiy
 
 class post(StatesGroup):
     tets_text = State()
-
-class spisok(StatesGroup):
-    ussu = State()
 
 class sms2(StatesGroup):
     sms_text = State()
@@ -100,16 +97,14 @@ async def use(call: CallbackQuery, state: FSMContext):
 @dp.callback_query_handler(text="spisok_us")
 async def usse(call: CallbackQuery):
     ss = open('ussers.txt', 'r').read()
+    if len(ss) > 100:
+        for x in range(0, len(ss), 100):
+            await call.message.answer(ss[x:x+100])
+    else:
+        await call.message.answer(ss)
     if len(ss) <= 1:
         await call.answer("Список Пуст !")
-    if len(ss) >= 45:
-        await call.message.answer(
-            f"<b>Список велик для отображения</b>\n"
-            f"<b>Вот весь список в документе</b>")
-        fil = open("ussers.txt", "rb").read()
-        await call.message.answer_document(fil, reply_markup=back_to_main_menu)
-    else:
-        await call.message.answer(ss, reply_markup=back_to_main_menu)
+    await call.message.answer(ss, reply_markup=back_to_main_menu)
   
 
 @dp.callback_query_handler(text="adusse", state='*')
@@ -123,39 +118,15 @@ async def adusse(call: CallbackQuery):
 async def adusse(message: Message, state: FSMContext):
     data = await state.get_data()
     name_x = message.text
-    if len(name_x) >= 49:
-        await message.answer("<b>Список более 50 username\n"
-                            f"закидуй текстовиком \n"
-                            f"каждый юзик с новой строки</b>")
-    if len(name_x) > 10:
-        for x in range(0, len(name_x), 10):
-            with open('ussers.txt', 'a') as f:
-                f.writelines(name_x[x:x+20])
-   
+    ss = open('ussers.txt', 'r').readlines()
+    ss.append(f'{name_x}\n')
+    with open('ussers.txt', 'w') as f:
+        f.writelines(ss)
     new_us = open('ussers.txt', 'r').read()
     await message.answer(new_us, reply_markup=back_to_main_menu)
 
 
 
-@dp.callback_query_handler(text="fuser")
-async def fuser(call: CallbackQuery):
-    await call.message.answer(
-        f"<b>Закинь мне текстовый файл</b>\n"
-        f"<b>Чтобы каждый username был с новой строки</b>", reply_markup=back_to_main_menu)
-    @dp.message_handler(content_types=['document'])
-    async def uss(message: Message):
-        await message.document.download(destination="ussers.txt")
-        await message.answer("Получатели добавлены", reply_markup=back_to_main_menu)
-
-
-@dp.message_handler(state=spisok.ussu)
-@dp.message_handler(content_types=['document'])
-async def ussu(message: Message, state: FSMContext):
-    if message.document.file_name[-3:] == "txt":
-        await message.document.download(destination="ussers.txt")
-        await message.answer("Получатели добавлены", reply_markup=back_to_main_menu)
-    else:
-        await message.answer("<b>Не верный формат списка нужен .txt</b>")
 
 @dp.callback_query_handler(text="rmusse")
 async def rmusse(call: CallbackQuery):
@@ -171,23 +142,37 @@ async def usse(call: CallbackQuery, state: FSMContext):
                                  reply_markup=back_to_main_menu)
 
 
-
+    @dp.message_handler(content_types=['document'])
+    async def uss(message: Message):
+        await message.document.download(destination="ussers.txt")
+        await message.answer("Получатели добавлены", reply_markup=back_to_main_menu)
 
 
 @dp.callback_query_handler(text="del_acc")
 async def del_account(call: CallbackQuery, state: FSMContext):
     file_list = os.listdir('sessions')
     z = len(file_list)
-    keyboard = InlineKeyboardMarkup()
-    for x in range(z):
-        keyboard.add(InlineKeyboardButton(text=file_list[x].split('.')[0], callback_data=file_list[x]))
-    keyboard.add(InlineKeyboardButton(text="🔙Назад", callback_data="back_to_main_menu"))
-    await call.message.answer('<b>Какой Акаунт Удалить ?</b>\n\n', reply_markup=keyboard)
-    @dp.callback_query_handler(lambda c: c.data)
-    async def poc_callback_but(c:CallbackQuery):
-        ydal = c.data
-        os.remove(f"sessions/{ydal}")
-        await call.message.answer(f'<b>✅ Акаунт {ydal.split(".")[0]} Удален ✅</b>', reply_markup=back_to_main_menu)
+    for x in file_list:
+        try:
+            cli = open(f"sessions/{x}").read()
+            client = TelegramClient(StringSession(cli), api_id, api_hash)
+            await client.connect()
+        except:
+            client = TelegramClient(f"sessions/{x}", api_id, api_hash)
+            await client.connect()
+        result = await client(functions.users.GetFullUserRequest(id="me"))
+        nam = result.user.first_name
+        lnam = result.user.last_name
+        keyboard = InlineKeyboardMarkup()
+    #for x in range(z):
+        keyboard.add(InlineKeyboardButton(text=f"{nam}", callback_data=file_list[x]))
+        keyboard.add(InlineKeyboardButton(text="🔙Назад", callback_data="back_to_main_menu"))
+        await call.message.answer('<b>Какой Акаунт Удалить ?</b>\n\n', reply_markup=keyboard)
+        @dp.callback_query_handler(lambda c: c.data)
+        async def poc_callback_but(c:types.CallbackQuery):
+            ydal = c.data
+            os.remove(f"sessions/{ydal}")
+            await call.message.answer(f'<b>✅ Акаунт {ydal.split(".")[0]} Удален ✅</b>', reply_markup=back_to_main_menu)
     """
     keyboard = types.InlineKeyboardMarkup()
     for x in str(file_list):
@@ -223,8 +208,6 @@ async def del_account(message: Message, state: FSMContext):
 
 
 
-
-
 @dp.callback_query_handler(text="leave")
 async def leave(call: CallbackQuery):
     user = await select_user(call.from_user.id)
@@ -246,12 +229,12 @@ async def leave(call: CallbackQuery):
 
 @dp.callback_query_handler(text="stop_spam")
 async def leave(call: CallbackQuery):
-    await bot.delete_message(chat_id=call.from_user.id, message_id=call.message.message_id)
-    with open("stop.txt", "w") as f:
-        f.write("stop")
-     
-        await call.answer("❗️Останавливаю Спам Ожидайте ...")
-
+    job = scheduler.get_job(job_id=str(call.from_user.id))
+    if job:
+        job.remove()
+        await call.answer("❗️Спам остановлен")
+    else:
+        await call.answer("❗️Нету активной спам-атаки")
 
 
 @dp.callback_query_handler(text="proxy_settings")
@@ -386,7 +369,9 @@ async def pusk_start(call: CallbackQuery):
                         f"<code>{sms}</code>\n"
                         f"<b>Пользователю:</b> <code>{ss[x][:-1]}</code>\n"
                         f"<b>Тайминг паузы установлен на {ti} секунд</b>\n"
-                        f"<b>Всего отправленно смс:</b>    <code>{msm}</code>\n")
+                        f"<b>Всего отправленно смс:</b>    <code>{msm}</code>\n",
+                        reply_markup=ssttop
+                        )
                     time.sleep(ti)
             except:
                 
