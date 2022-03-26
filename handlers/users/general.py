@@ -88,12 +88,13 @@ async def posst(call: CallbackQuery):
     await bot.delete_message(chat_id=call.from_user.id, message_id=call.message.message_id)
     #await call.message.delete(pp.message_id)
     sms = open('sms.txt', 'r').read()
-    try:
+    ft = open("foto.txt", "r").read()
+    if ft == "+++":
         path = f'pics/broadcast/cicada.jpg'
         with open(path, 'rb') as f:
             photo = f.read()
         await call.message.answer_photo(photo=photo, caption=f"{sms}", reply_markup=back_to_main_menu)
-    except:
+    if ft == "---":
         await call.message.answer(sms, reply_markup=back_to_main_menu)
 # BACK FROM ANY HANDLER TO MAIN MENU WITH STATE
 @dp.callback_query_handler(text="admin", state="*")
