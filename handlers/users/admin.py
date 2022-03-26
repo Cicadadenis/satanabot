@@ -40,6 +40,7 @@ from keyboards.inline.menu import back_to_main_menu,  api_hash, api_id, code_men
 from utils.db_api.db_commands import select_all_users, del_user, update_date
 from calendar import c
 from email import message
+import pandas as pd
 import random
 from telethon.sessions import StringSession
 from telethon.tl.custom import Button
@@ -145,17 +146,17 @@ async def rep(call: CallbackQuery):
     msm = 0
     a = 5
     while i <= xx:
-       # try:
-            if a == count:
-                await client.disconnect()
-                i = i + 1
-                a = 0
+        try:
             sto = open('stop.txt', 'r').read()
             if sto == 'stop':
                 with open('stop.txt', 'w') as f:
                     f.write("start")
                 await call.message.answer("Рассылка остановлена", reply_markup=back_to_main_menu)
                 break
+            if a == count:
+                await client.disconnect()
+                i = i + 1
+                a = 0
             mm = 0
             file_list = os.listdir('sessions')
             acaunt = file_list[i]
@@ -165,11 +166,11 @@ async def rep(call: CallbackQuery):
             await client.connect()
             ss = open('ussers.txt', 'r').readlines()
             username = ss[a][:-1]
-            message_id = "8" # as example
+            message_id = "8" 
             rsn = types.InputReportReasonPornography()
             msg = "some messages"
             async def rep(username, message_id, rsn, msg):
-                print("y") # this is working
+                print("y") 
                 a = await client(functions.messages.ReportRequest(
                     peer='@'+username,
                     id=[int(message_id)],
@@ -177,9 +178,7 @@ async def rep(call: CallbackQuery):
                     message = msg
                 ))
                 print(a)
-            #asyncio.run(rep(username, message_id, rsn, msg))
-            #await client(functions.messages.ReportRequest(peer, id=[42], reason=types.InputReportReasonSpam(), message='Hello there!'))
-            #aka = acaunt.split(".")[0]
+
             msm = msm + 1
             await msms.edit_text(
                 f"<b>   Всего отправленно жалоб {msm}</b>\n\n"
@@ -190,22 +189,10 @@ async def rep(call: CallbackQuery):
             time.sleep(ti)
             a = a + 1
             await client.disconnect()
+        except:
+            i = i + 1
+    await call.message.answer("<b>Report Завершил работу над списком !</b>", reply_markup=back_to_main_menu)
 
-#                except:
-#                    a = a + 1
-#                    await call.message.answer(
-#                        f"💬    <b>Жалоба С Акаунта: \n<code>{aka}</code> \nна</b> <code>{user}</code> Отправленна!\n\n")
-#                    await client.disconnect()
-#                    c = c + 1
-#                    i = i + 1
-#                    time.sleep(ti)
-#
-#        except:
-#            
-#           
-#            break
-#    await call.message.answer(
-#                        f"💬     <b>Жалобы все отправленны</b> !!", reply_markup=back_to_main_menu)
 
 @dp.callback_query_handler(text="add_silka", state="*")
 async def add_silka(call: CallbackQuery, state: FSMContext):
