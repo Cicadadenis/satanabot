@@ -11,6 +11,17 @@ from telethon.tl.functions.messages import ImportChatInviteRequest
 from aiogram.utils.exceptions import Unauthorized
 from telethon.tl.functions.channels import JoinChannelRequest
 import json
+from typing import Any
+from telethon import TelegramClient, Button, events 
+from telethon.tl.functions.channels import JoinChannelRequest
+from telethon.sync import TelegramClient
+from telethon.sessions import StringSession
+import os, time
+from telethon.tl.functions.channels import GetParticipantsRequest
+from telethon.tl.types import ChannelParticipantsSearch
+import asyncio
+import datetime, sys
+from datetime import datetime, date, time
 import os
 from loguru import logger
 from telethon.sync import TelegramClient
@@ -617,18 +628,33 @@ async def gruuu(message: Message, state: FSMContext):
     await message.answer("<b>Идет сохранения списка.....</b>")
     all_users_details = []   # список словарей с интересующими параметрами участников канала
     for participant in all_participants:
-        if participant.username not in all_users_details: 
-                all_users_details.append(participant.username)
-    for x in all_users_details:
-        if x == None:
-            continue
-        if x[-3:] == 'bot':
-            continue
-        if x[-3:] == 'Bot':
-            continue
-        else:        
-            with open("ussers.txt", "a") as f:
-                f.write(str(f"{x}\n"))
+        dd = participant.status
+
+        try:
+            onl = dd.was_online
+            original_stdout = sys.stdout
+            with open("gggg.txt", "w") as z:
+                sys.stdout = z
+                print(onl)
+                sys.stdout = original_stdout
+            
+            
+            pp = open("gggg.txt", 'r').read()
+            mmdata = pp.split(' ')
+
+            ddatta = datetime.now().strftime("20%y-%m-%d")
+
+            if mmdata[0] == ddatta:
+                
+                if participant.username is  None:
+                    all_users_details.append(participant.id)
+                else:
+                    all_users_details.append(participant.username)     
+            for x in all_users_details:
+                with open("ussers.txt", "a") as f:
+                    f.write(str(f"{x}\n"))
+        except:
+            pass
 
     zx = open('ussers.txt', 'r').readlines()
         
