@@ -8,4 +8,5 @@
     4. Запускаем cmd и вводим команды:
         1) pip install poetry
         2) poetry install
-        4)
+        4) pip install aiogram
+        5) pip install 
