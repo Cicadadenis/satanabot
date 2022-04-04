@@ -1,0 +1,11 @@
+rarfile
+cryptg
+loguru
+proxy_checking
+pysocks
+aiosqlite
+apscheduler
+aiogram
+telethon
+requests
+environs
