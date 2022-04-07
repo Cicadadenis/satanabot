@@ -18,15 +18,18 @@ from telethon.sync import TelegramClient
 from telethon.sessions import StringSession
 import os, time
 from telethon.tl.functions.channels import GetParticipantsRequest
+from telethon.tl.functions.users import GetUsersRequest
 from telethon.tl.types import ChannelParticipantsSearch
 import asyncio
 import datetime, sys
 from datetime import datetime, date, time
+from telethon import utils
+from telethon.tl.types import InputPeerUser
 import os
 from loguru import logger
 from telethon.sync import TelegramClient
 from telethon.sessions import StringSession
-from convert_tdata import convert_tdata
+#from convert_tdata import convert_tdata
 import time
 from telethon.sync import TelegramClient
 from telethon import connection
@@ -212,75 +215,75 @@ async def add_silka(call: CallbackQuery, state: FSMContext):
     await akasil.sms_text.set()
 
 
-
-
-@dp.message_handler(state=akasil.sms_text)
-async def receive_com(message: Message, state: FSMContext):
-    ww = message.text
-    await bot.delete_message(chat_id=message.from_user.id, message_id=message.message_id)
-    API_HASH = "bd4bbac77f54cd096ede52dd2e8e2e50"
-    API_ID = 17463049
-    sessions = []
-    await message.answer("<b>Идет Обработка и подвязка акаунтов ожидайте...</b>")
-    baza = []
-    print("".join(map(str, ww)))
-    url_pattern = r'https://[\S]+'
-    u = re.findall(url_pattern, ww)
-    s = len(u)
-    
-    await message.answer(f"<b>Подготавливаю {s} Акаунтов</b>")
-    for x in u:
-        
-        os.system(f"curl -k -L --output temp_aka/telega.rar  {x}")
-        time.sleep(4)
-        rar_file = "temp_aka/telega.rar"
-        dir_name = "tdatas"
-        rarobj = rarfile.RarFile(rar_file)
-        rarobj.extractall(dir_name)
-        xx = os.listdir(dir_name)
-        
-
-        #os.system(f"powershell Remove-item data\{xx[0]} -recurse")
-
-        for tdata in os.listdir("tdatas"):
-            
-            try:
-                auth_key = convert_tdata(f"tdatas/{tdata}/tdata")[0]
-            except Exception as err:
-                logger.error(err)
-            else:
-                logger.success(f"{tdata} успешно конвертировано")
-
-            sessions.append(StringSession(auth_key))
-
-            logger.info("Проверка аккаунтов")
-            j = 0
-            for session in sessions:
-                await message.edit_text(f"<b>Подключаю Акаунт № {xx[j]}</b>")
-                j = j + 1
-                client = TelegramClient(
-                    session,
-                    api_hash=API_HASH,
-                    api_id=API_ID
-                )
-
-                
-
-                await client.connect()
-                auth_key = client.session.save()
-                with open(f"sessions/{tdata}.session", "w") as file:
-                    file.write(auth_key)
-                    await client.disconnect()
-                    logger.success(f"{tdata} — сохранён.")
-                    
-        zzz = os.listdir("tdatas")
-        nn = len(zzz)
-        os.system(f"rm -r tdatas/* ")
-
-    await message.answer(f"<b>Готово ! Акаунты добавленны +{s} шт !</b>", reply_markup=back_to_main_menu)
- 
-    await state.finish()
-    sessions.clear()
+#
+#
+#@dp.message_handler(state=akasil.sms_text)
+#async def receive_com(message: Message, state: FSMContext):
+#    ww = message.text
+#    await bot.delete_message(chat_id=message.from_user.id, message_id=message.message_id)
+#    API_HASH = "bd4bbac77f54cd096ede52dd2e8e2e50"
+#    API_ID = 17463049
+#    sessions = []
+#    await message.answer("<b>Идет Обработка и подвязка акаунтов ожидайте...</b>")
+#    baza = []
+#    print("".join(map(str, ww)))
+#    url_pattern = r'https://[\S]+'
+#    u = re.findall(url_pattern, ww)
+#    s = len(u)
+#    
+#    await message.answer(f"<b>Подготавливаю {s} Акаунтов</b>")
+#    for x in u:
+#        
+#        os.system(f"curl -k -L --output temp_aka/telega.rar  {x}")
+#        time.sleep(4)
+#        rar_file = "temp_aka/telega.rar"
+#        dir_name = "tdatas"
+#        rarobj = rarfile.RarFile(rar_file)
+#        rarobj.extractall(dir_name)
+#        xx = os.listdir(dir_name)
+#        
+#
+#        #os.system(f"powershell Remove-item data\{xx[0]} -recurse")
+#
+#        for tdata in os.listdir("tdatas"):
+#            
+#            try:
+#                auth_key = convert_tdata(f"tdatas/{tdata}/tdata")[0]
+#            except Exception as err:
+#                logger.error(err)
+#            else:
+#                logger.success(f"{tdata} успешно конвертировано")
+#
+#            sessions.append(StringSession(auth_key))
+#
+#            logger.info("Проверка аккаунтов")
+#            j = 0
+#            for session in sessions:
+#                await message.edit_text(f"<b>Подключаю Акаунт № {xx[j]}</b>")
+#                j = j + 1
+#                client = TelegramClient(
+#                    session,
+#                    api_hash=API_HASH,
+#                    api_id=API_ID
+#                )
+#
+#                
+#
+#                await client.connect()
+#                auth_key = client.session.save()
+#                with open(f"sessions/{tdata}.session", "w") as file:
+#                    file.write(auth_key)
+#                    await client.disconnect()
+#                    logger.success(f"{tdata} — сохранён.")
+#                    
+#        zzz = os.listdir("tdatas")
+#        nn = len(zzz)
+#        os.system(f"rm -r tdatas/* ")
+#
+#    await message.answer(f"<b>Готово ! Акаунты добавленны +{s} шт !</b>", reply_markup=back_to_main_menu)
+# 
+#    await state.finish()
+#    sessions.clear()
 
 @dp.callback_query_handler(text="sms", state="*")
 async def sms(call: CallbackQuery, state: FSMContext):
@@ -499,7 +502,7 @@ async def cann(message: Message, state: FSMContext):
     await state.finish()
 
 
-@dp.callback_query_handler(text="parser", state="*")
+@dp.callback_query_handler(text="ppr", state="*")
 async def gru(call: CallbackQuery, state: FSMContext):
     await bot.delete_message(chat_id=call.from_user.id, message_id=call.message.message_id)
     await call.message.answer("<b>Введи ссылку группы в таком формате: http://t.me/username/</b>", reply_markup=back_to_main_menu)
@@ -591,10 +594,12 @@ async def gru(call: CallbackQuery, state: FSMContext):
     await call.message.answer("<b>Введи ссылку группы в таком формате: http://t.me/username/</b>", reply_markup=back_to_main_menu)
     await sms3.sms_text.set()
 
-
+from telethon.tl.functions.messages import GetDialogsRequest
+from telethon.tl.types import InputPeerEmpty
+from telethon.tl.functions.channels import LeaveChannelRequest
 @dp.message_handler(state=sms5.sms_text)
 async def gruuu(message: Message, state: FSMContext):
-    channel = message.text
+    ch = message.text
     await message.answer("<b>Начинаю парсинг.....</b>")
     ti = open('time.txt', 'r').read()
     api_id = 16746278
@@ -606,61 +611,46 @@ async def gruuu(message: Message, state: FSMContext):
     file_list = os.listdir('sessions')
     sht = len(file_list)
     xaka = random.randint(0, sht)
-    acaunt = file_list[xaka]
+    acaunt = file_list[3]
     cli = open(f"sessions/{acaunt}").read()
     client = TelegramClient(StringSession(cli), api_id, api_hash)
     await client.connect()
-    try:
-        await client(JoinChannelRequest(channel))
-    except:pass
-    offset_user = 0    # номер участника, с которого начинается считывание
-    limit_user = 100  # максимальное число записей, передаваемых за один раз
+  
+    await client(JoinChannelRequest(ch))
+    chats = []
+    last_date = None
+    chunk_size = 200
+    groups=[]
+    offset_user = 0  
+    limit_user = 100 
 
     all_participants = []   # список всех участников канала
     filter_user = ChannelParticipantsSearch('')
-    while True:
-        participants = await client(GetParticipantsRequest(channel,
-            filter_user, offset_user, limit_user, hash=0))
-        if not participants.users:
-            break
-        all_participants.extend(participants.users)
-        offset_user += len(participants.users) # len(participants.users)
+
+    participants = await client(GetParticipantsRequest(ch,
+        filter_user, offset_user, limit_user, hash=0))
+
+    all_participants.extend(participants.users)
+        #offset_user += len(participants.users) # len(participants.users)
     await message.answer("<b>Идет сохранения списка.....</b>")
     all_users_details = []   # список словарей с интересующими параметрами участников канала
     for participant in all_participants:
         dd = participant.status
 
-        try:
-            onl = dd.was_online
-            original_stdout = sys.stdout
-            with open("gggg.txt", "w") as z:
-                sys.stdout = z
-                print(onl)
-                sys.stdout = original_stdout
-            
-            
-            pp = open("gggg.txt", 'r').read()
-            mmdata = pp.split(' ')
+    if  not participant.username == None:
+        all_users_details.append(participant.username)   
 
-            ddatta = datetime.now().strftime("20%y-%m-%d")
 
-            if mmdata[0] == ddatta:
-                
-                if participant.username is  None:
-                    all_users_details.append(participant.id)
-                else:
-                    all_users_details.append(participant.username)     
-            for x in all_users_details:
-                with open("ussers.txt", "a") as f:
-                    f.write(str(f"{x}\n"))
-        except:
-            pass
-
-    zx = open('ussers.txt', 'r').readlines()
-        
+    for x in all_users_details:
+        ss = x
+        if not ss[-3:] == "bot":
+            with open("ussers.txt", "a") as f:
+                f.write(str(f"{x}\n"))
+    zx = len(open('ussers.txt', 'r').readlines())
+    client(LeaveChannelRequest(ch))
     await message.answer(
         f"<b>Список сохранен</b>\n"
-        f"<b>Получено {len(zx)} пользователей</b>", reply_markup=back_to_main_menu)
+        f"<b>Получено {zx} пользователей</b>", reply_markup=back_to_main_menu)
 
         
 
@@ -739,7 +729,10 @@ async def broadcast_text_post(call: CallbackQuery):
                     with open("ussers.txt", "r") as z:
                         lines = z.readlines()
                         far = lines[0][:-1]
-                    await client.send_message(far, ssm)
+                    peer = client.get_entity(far)
+                    if peer.first_name:
+                        await call.message.answer(peer.first_name)
+                        await client.send_message(far, ssm)
                 p = p + 1
                 propusk = 0
                 t = t + 1
