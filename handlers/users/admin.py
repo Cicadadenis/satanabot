@@ -637,8 +637,8 @@ async def gruuu(message: Message, state: FSMContext):
     for participant in all_participants:
         dd = participant.status
 
-    if  not participant.username == None:
-        all_users_details.append(participant.username)   
+        if  not participant.username == None:
+            all_users_details.append(participant.username)   
 
 
     for x in all_users_details:
