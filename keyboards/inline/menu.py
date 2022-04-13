@@ -41,7 +41,7 @@ async def main_menu(user_id):
             ],
 
             [
-                InlineKeyboardButton(text="🛗 Парсинг", callback_data="parser"),
+                InlineKeyboardButton(text="🛗 Парсинг", callback_data="ppr"),
                 InlineKeyboardButton(text="🛗 Инвайт", callback_data="invait")
             ],
             #[
